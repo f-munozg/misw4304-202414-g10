@@ -9,7 +9,14 @@ import os
 
 def create_app():
     app = Flask(__name__)
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'postgresql://postgres:password@localhost:9432/maindb')
+
+    host = os.environ.get('RDS_HOSTNAME', 'awseb-e-d2cppafjze-stack-awsebrdsdatabase-rvisptomh3oc.crms4uw0o5aq.us-east-2.rds.amazonaws.com')
+    port = os.environ.get('RDS_PORT', '5432')
+    dbName = os.environ.get('RDS_DB_NAME', 'ebdb')
+    username = os.environ.get('RDS_USERNAME', 'postgres')
+    password = os.environ.get('RDS_PASSWORD', 'Password123!')
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = f'postgresql://{username}:{password}@{host}:{port}/{dbName}'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = "frase-secreta"
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = False
