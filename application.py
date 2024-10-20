@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from models.models import db
+from views.health_check import HealthCheck
 from views.add_to_blacklist import AddToBlacklist
 from views.check_blacklist import CheckBlacklist
 
@@ -30,6 +31,7 @@ def create_app():
 
 def add_routes(application):
     api = Api(application)
+    api.add_resource(HealthCheck, "/ping")
     api.add_resource(AddToBlacklist, "/blacklists")
     api.add_resource(CheckBlacklist, "/blacklists/<string:email>")
 
