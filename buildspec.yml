@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 593793065204.dkr.ecr.us-east-2.amazonaws.com
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...          
+      - docker build -t misw4304-g10/blacklist .
+      - docker tag misw4304-g10/blacklist:latest 593793065204.dkr.ecr.us-east-2.amazonaws.com/misw4304-g10/blacklist:latest
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push 593793065204.dkr.ecr.us-east-2.amazonaws.com/misw4304-g10/blacklist:latest
+artifacts:
+  files:
+    - '**/*'
