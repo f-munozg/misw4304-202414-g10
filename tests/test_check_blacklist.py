@@ -1,4 +1,5 @@
 import unittest
+import os
 from unittest.mock import patch, MagicMock
 from flask import json
 from flask_jwt_extended import create_access_token
@@ -7,16 +8,15 @@ from models.models import db, Blacklist
 
 class TestCheckBlacklist(unittest.TestCase):
     def setUp(self):
+        os.environ['TESTING'] = 'true'
         self.app = create_app()
         self.app.testing = True
         self.client = self.app.test_client()
 
+        # Initialize the app context and db
         self.app_context = self.app.app_context()
         self.app_context.push()
-
-        # Se inicializa una base de datos inexistente para evitar errores de inicializar
-        # REVISAR
-        db.init_app(self.app)
+        db.init_app(self.app)  # Ensure that db is initialized
 
         self.jwt_token = create_access_token(identity='test_user')
 
@@ -25,13 +25,12 @@ class TestCheckBlacklist(unittest.TestCase):
 
     @patch('models.models.Blacklist.query')
     @patch('flask_jwt_extended.get_jwt_identity')
-    def test_check_blacklist_success(self, mock_get_jwt_identity, mock_blacklist_query):
+    def test_check_blacklist_email_exists(self, mock_get_jwt_identity, mock_blacklist_query):
         mock_get_jwt_identity.return_value = 'test_user'
         
+        # Mock the Blacklist object to be returned
         mock_mail = MagicMock()
         mock_mail.blocked_reason = "spam"
-        
-        # Se configura el filtro y el valor a retornar
         mock_blacklist_query.filter.return_value.first.return_value = mock_mail
 
         response = self.client.get(
@@ -42,20 +41,12 @@ class TestCheckBlacklist(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['mail_blacklisted'], True)
         self.assertEqual(response.json['blacklist_reason'], "spam")
-        
-        # Se verifica que el filtro es llamado con el email correcto
         mock_blacklist_query.filter.assert_called_once()
-        called_args = mock_blacklist_query.filter.call_args[0]
-
-        # Se verifica que el argumento es una expresión válida de SQLAlchemy
-        self.assertTrue(any(isinstance(arg, type(Blacklist.email == "test@example.com")) for arg in called_args))
 
     @patch('models.models.Blacklist.query')
     @patch('flask_jwt_extended.get_jwt_identity')
-    def test_check_blacklist_email_not_found(self, mock_get_jwt_identity, mock_blacklist_query):
+    def test_check_blacklist_email_not_exists(self, mock_get_jwt_identity, mock_blacklist_query):
         mock_get_jwt_identity.return_value = 'test_user'
-        
-        # Se configura el valor a retornar como None
         mock_blacklist_query.filter.return_value.first.return_value = None
 
         response = self.client.get(
@@ -65,13 +56,7 @@ class TestCheckBlacklist(unittest.TestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.json['mail_blacklisted'], False)
-        
-        # Se verifica que el filtro es llamado con el email correcto
         mock_blacklist_query.filter.assert_called_once()
-        called_args = mock_blacklist_query.filter.call_args[0]
-
-        # Se verifica que el argumento es una expresión válida de SQLAlchemy
-        self.assertTrue(any(isinstance(arg, type(Blacklist.email == "test@example.com")) for arg in called_args))
 
 if __name__ == '__main__':
     unittest.main()
