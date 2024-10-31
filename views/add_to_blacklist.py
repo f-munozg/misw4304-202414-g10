@@ -31,5 +31,5 @@ class AddToBlacklist(Resource):
             }, 409
 
         return {
-            "message": "Account created"
+            "message": "Account created successfully"
         }, 201
