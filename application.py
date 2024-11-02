@@ -21,8 +21,10 @@ def create_app():
     application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     application.config["JWT_SECRET_KEY"] = "frase-secreta"
     application.config["JWT_ACCESS_TOKEN_EXPIRES"] = False
-    app_context = application.app_context()
-    app_context.push()
+
+    if not os.environ.get('TESTING'):
+        init_db(application)
+
     add_routes(application)
 
     jwt = JWTManager(application)
@@ -35,9 +37,11 @@ def add_routes(application):
     api.add_resource(AddToBlacklist, "/blacklists")
     api.add_resource(CheckBlacklist, "/blacklists/<string:email>")
 
-application = create_app()
-db.init_app(application)
-db.create_all()
+def init_db(app):
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
 
 if __name__ == "__main__":
+    application = create_app()
     application.run(host='0.0.0.0', port='5000')
