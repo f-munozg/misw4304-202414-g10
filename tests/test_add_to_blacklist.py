@@ -40,7 +40,7 @@ class TestAddToBlacklist(unittest.TestCase):
         )
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json['message'], "Account created")
+        self.assertEqual(response.json['message'], "Account created successfully")
         mock_db_session.add.assert_called_once()
         mock_db_session.commit.assert_called_once()
 

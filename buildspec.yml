@@ -7,7 +7,7 @@ phases:
   pre_build:
     commands:
       - echo Running tests with pytest
-      - python -m unittest tests/test_add_to_blacklist.py tests/test_check_blacklist.py
+      - python -m unittest
       - echo Tests executed successfully
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 593793065204.dkr.ecr.us-east-2.amazonaws.com
