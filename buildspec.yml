@@ -1,6 +1,11 @@
 version: 0.2
 
 phases:
+  testing:
+    commands:
+      - echo Running tests with pytest
+      - python -m unittest tests/test_add_to_blacklist.py tests/test_check_blacklist.py
+      - echo Tests executed successfully
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...

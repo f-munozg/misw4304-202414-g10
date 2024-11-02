@@ -10,9 +10,6 @@ class AddToBlacklist(Resource):
     def post(self):
         current_user = get_jwt_identity()
         origin_ip = request.remote_addr
-        print('request.remote_addr:', origin_ip)
-        print(request.environ.get('HTTP_X_FORWARDED_FOR', "x_forwarded_not_Found"))
-        print(request.headers.get('X-Forwarded-For', "x-forwarded-not-found"))
         data = request.json
 
         mail = Blacklist(
