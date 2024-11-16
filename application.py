@@ -11,7 +11,7 @@ import os
 def create_app():
     application = Flask(__name__)
 
-    host = os.environ.get('RDS_HOSTNAME', 'awseb-e-d2cppafjze-stack-awsebrdsdatabase-rvisptomh3oc.crms4uw0o5aq.us-east-2.rds.amazonaws.com')
+    host = os.environ.get('RDS_HOSTNAME', 'awseb-e-2czu7iuywm-stack-awsebrdsdatabase-yeqkvxnsagvf.crms4uw0o5aq.us-east-2.rds.amazonaws.com')
     port = os.environ.get('RDS_PORT', '5432')
     dbName = os.environ.get('RDS_DB_NAME', 'ebdb')
     username = os.environ.get('RDS_USERNAME', 'postgres')
